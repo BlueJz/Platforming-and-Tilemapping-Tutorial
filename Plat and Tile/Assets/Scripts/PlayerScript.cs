@@ -14,6 +14,12 @@ public class PlayerScript : MonoBehaviour
     public GameObject LoseTextObject;
     public int scoreValue = 0;
     public int livesValue = 3;
+    public AudioClip LoseMusic;
+    public AudioClip WinMusic;
+    public AudioClip GameMusic;
+    public AudioSource musicSource;
+    private bool facingRight = true;
+    Animator anim;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +29,9 @@ public class PlayerScript : MonoBehaviour
         lives.text = "Lives: "+ livesValue.ToString();
         WinTextObject.SetActive(false);
         LoseTextObject.SetActive(false);
+        musicSource.clip = GameMusic;
+        musicSource.Play();
+        anim = GetComponent<Animator>();
     }
 
 
@@ -32,7 +41,71 @@ public class PlayerScript : MonoBehaviour
         float hozMovement = Input.GetAxis("Horizontal");
         float vertMovement = Input.GetAxis("Vertical");
         rd2d.AddForce(new Vector2(hozMovement * speed, vertMovement * speed));
+        
+        if (facingRight == false && hozMovement > 0)
+        {
+            Flip();
+        }
+            else if (facingRight == true && hozMovement < 0)
+        {
+            Flip();
+        }
     }
+
+    void Update()
+    {
+
+     if (Input.GetKeyDown(KeyCode.D))
+
+        {
+
+          anim.SetInteger("State", 1);
+
+         }
+
+     if (Input.GetKeyUp(KeyCode.D))
+
+        {
+
+          anim.SetInteger("State", 0);
+
+        }
+
+     if (Input.GetKeyDown(KeyCode.A))
+
+        {
+
+          anim.SetInteger("State", 1);
+
+        }
+
+     if (Input.GetKeyUp(KeyCode.A))
+
+        {
+
+          anim.SetInteger("State", 0);
+ 
+        }
+
+
+     if (Input.GetKeyDown(KeyCode.W))
+        {
+            anim.SetInteger("State", 2);
+        }
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            anim.SetInteger("State", 0);
+        }
+
+    }
+
+    void Flip()
+   {
+     facingRight = !facingRight;
+     Vector2 Scaler = transform.localScale;
+     Scaler.x = Scaler.x * -1;
+     transform.localScale = Scaler;
+   }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -41,10 +114,17 @@ public class PlayerScript : MonoBehaviour
             scoreValue += 1;
             score.text = "Score: " + scoreValue.ToString();
             Destroy(collision.collider.gameObject);
-            if(scoreValue >= 4)
+            if(scoreValue == 4)
             {
+                if(scoreValue >= 8)
+                {
                 WinTextObject.SetActive(true);
+                musicSource.clip = WinMusic;
+                 musicSource.Play();
+                }
+                transform.position = new Vector3(2.28f,21.67f,0f);
                 Destroy(this);
+                
             }
         }
         if (collision.collider.tag == "Enemy")
@@ -55,6 +135,8 @@ public class PlayerScript : MonoBehaviour
             if (livesValue <= 0) 
             {
                 LoseTextObject.SetActive(true);
+                musicSource.clip = LoseMusic;
+                musicSource.Play();
                 Destroy (this);
             }
         }
@@ -66,7 +148,8 @@ public class PlayerScript : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.W))
             {
-                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse); //the 3 in this line of code is the player's "jumpforce," and you change that number to get different jump behaviors.  You can also create a public variable for it and then edit it in the inspector.
+                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse);
+                anim.SetInteger("State", 3);
             }
         }
     }
