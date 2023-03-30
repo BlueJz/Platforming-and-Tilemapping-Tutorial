@@ -121,9 +121,9 @@ public class PlayerScript : MonoBehaviour
                 WinTextObject.SetActive(true);
                 musicSource.clip = WinMusic;
                  musicSource.Play();
+                 Destroy (this);
                 }
-                transform.position = new Vector3(2.28f,21.67f,0f);
-                Destroy(this);
+                transform.position = new Vector3(2.28f,22.43f,0f);
                 
             }
         }
